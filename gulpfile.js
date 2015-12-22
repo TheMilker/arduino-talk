@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var nodemon = require('gulp-nodemon');
 
+var server = './bin/www';
+
 var basePaths = {
     src: './frontend/',
     dest: './public/',
@@ -42,6 +44,14 @@ gulp.task('deployLibraries', function() {
     ])
     .pipe(gulp.dest(paths.lib.dest));
 });
+
+gulp.task('start', function () {
+  nodemon({
+    script: server
+  , ext: 'js html'
+  , env: { 'NODE_ENV': 'development' }
+  })
+})
 
 gulp.task('default', function() {
     gulp.start('deployFrontEnd', 'deployLibraries');

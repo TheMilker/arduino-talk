@@ -21,6 +21,9 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+public/app
+public/lib
+public/stylesheets/style.css
 
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
@@ -28,3 +31,7 @@ node_modules
 
 # Debug log from npm
 npm-debug.log
+
+#Visual Studio Code files
+.vscode/
+
