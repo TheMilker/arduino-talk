@@ -2,31 +2,38 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var nodemon = require('gulp-nodemon');
 
-var server = './bin/www';
-
-var basePaths = {
-    src: './frontend/',
-    dest: './public/',
+var rootPaths =  {
+    app: './app/',
     bower: './bower_components/',
     node: './node_modules/'
 };
-
-var paths = {
-    app: {
-        src: basePaths.src + 'src/',
-        dest: basePaths.dest + 'app/'
-    },
-    lib: {
-        dest: basePaths.dest + 'lib/'
-    },
-    styles: {
-        src: basePaths.src + 'less/',
-        dest: basePaths.dest + 'css/min/'
-    }
+var basePaths = {
+    frontend: rootPaths.app + 'frontend/',
+    backend: rootPaths.app + 'backend/'
 };
 
+var publicFilesPath = basePaths.backend + 'public/';
+var paths = {
+    backend: {
+        src: basePaths.backend + 'src/'
+    },
+    app: {
+        src: basePaths.frontend + 'src/',
+        test: basePaths.frontend + 'test/',
+        dest: publicFilesPath + 'app/'
+    },
+    lib: {
+        dest: publicFilesPath + 'lib/'
+    },
+    styles: {
+        src: basePaths.backend + 'less/',
+        dest: publicFilesPath + 'stylesheets/'
+    }
+};
+var server = paths.backend.src + 'bin/www';
+
 gulp.task('lint', function() {
-  return gulp.src(paths.app.src + '**/*.js')
+  return gulp.src([paths.backend.src + '**/*.js', paths.app.src + '**/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
@@ -38,19 +45,19 @@ gulp.task('deployFrontEnd', function() {
 
 gulp.task('deployLibraries', function() {
     return gulp.src([
-        basePaths.node + 'angular2/bundles/angular2-polyfills.js',
-        basePaths.node + 'rxjs/bundles/Rx.umd.js',
-        basePaths.node + 'angular2/bundles/angular2-all.umd.js'
+        rootPaths.node + 'angular2/bundles/angular2-polyfills.js',
+        rootPaths.node + 'rxjs/bundles/Rx.umd.js',
+        rootPaths.node + 'angular2/bundles/angular2-all.umd.js'
     ])
     .pipe(gulp.dest(paths.lib.dest));
 });
 
 gulp.task('start', function () {
-  nodemon({
-    script: server
-  , ext: 'js html'
-  , env: { 'NODE_ENV': 'development' }
-  })
+    nodemon({
+        script: server,
+        watch: [paths.backend.src],
+        env: { 'NODE_ENV': 'development' }
+    })
 })
 
 gulp.task('default', function() {
