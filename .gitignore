@@ -35,3 +35,6 @@ npm-debug.log
 #Visual Studio Code files
 .vscode/
 
+app/backend/public/app/
+app/backend/public/lib/
+typings/
