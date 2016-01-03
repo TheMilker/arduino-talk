@@ -1,9 +1,8 @@
-var express = require('express');
-var router = express.Router();
-
+var express_1 = require('express');
+var index = express_1.Router();
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index');  
+index.get('/', function (req, res, next) {
+    res.render('index');
 });
-
-module.exports = router;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = index;

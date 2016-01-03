@@ -1,6 +1,8 @@
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var nodemon = require('gulp-nodemon');
+var tsd = require('gulp-tsd');
+var typescript = require('gulp-typescript');
 
 var rootPaths =  {
     app: './app/',
@@ -30,7 +32,14 @@ var paths = {
         dest: publicFilesPath + 'stylesheets/'
     }
 };
-var server = paths.backend.src + 'bin/www';
+var server = paths.backend.src + 'bin/www.js';
+
+gulp.task('tsd', function (callback) {
+    tsd({
+        command: 'reinstall',
+        config: './tsd.json'
+    }, callback);
+});
 
 gulp.task('lint', function() {
   return gulp.src([paths.backend.src + '**/*.js', paths.app.src + '**/*.js'])
@@ -38,9 +47,24 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('deployFrontEnd', function() {
+var tsBackendProject = typescript.createProject(paths.backend.src + 'tsconfig.json');
+gulp.task('compileBackend', function () {
+    return gulp.src(paths.backend.src+'**/*.ts')
+        .pipe(typescript(tsBackendProject)) 
+        .pipe(gulp.dest(''));
+});
+
+var tsFrontendProject = typescript.createProject({
+	declaration: true,
+	noExternalResolve: true
+});
+gulp.task('compileFrontend', function() {
+    
+});
+
+gulp.task('deployFrontend', function() {
     return gulp.src(paths.app.src + '**')
-    .pipe(gulp.dest(paths.app.dest));
+        .pipe(gulp.dest(paths.app.dest));
 });
 
 gulp.task('deployLibraries', function() {
@@ -61,5 +85,5 @@ gulp.task('start', function () {
 })
 
 gulp.task('default', function() {
-    gulp.start('deployFrontEnd', 'deployLibraries');
+    gulp.start('deployFrontend', 'deployLibraries');
 });
