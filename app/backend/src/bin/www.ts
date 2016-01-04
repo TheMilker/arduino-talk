@@ -1,4 +1,3 @@
-/// <reference path="../../../../typings/debug/debug.d.ts" />
 import app from '../app';
 import debugModule = require('debug');
 import http = require('http');

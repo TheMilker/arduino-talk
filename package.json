@@ -24,6 +24,7 @@
     "zone.js": "0.5.10"
   },
   "devDependencies": {
+    "browser-sync": "^2.10.1",
     "gulp": "^3.9.0",
     "gulp-jshint": "^2.0.0",
     "gulp-nodemon": "^2.0.6",

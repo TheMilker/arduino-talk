@@ -38,3 +38,6 @@ npm-debug.log
 app/backend/public/app/
 app/backend/public/lib/
 typings/
+app/backend/src/bin/*.js
+app/backend/src/app.js
+app/backend/src/routes/*.js
