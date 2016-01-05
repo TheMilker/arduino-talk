@@ -8,17 +8,22 @@ var browserSync = require('browser-sync').create();
 var rootPaths =  {
     app: './app/',
     bower: './bower_components/',
-    node: './node_modules/'
+    node: './node_modules/',
+    deploy: './deploy/'
 };
 var basePaths = {
     frontend: rootPaths.app + 'frontend/',
     backend: rootPaths.app + 'backend/'
 };
 
-var publicFilesPath = basePaths.backend + 'public/';
+var publicFilesPath = rootPaths.deploy + 'public/';
+var backendSrcPath = basePaths.backend + 'src/';
 var paths = {
     backend: {
-        src: basePaths.backend + 'src/'
+        src: backendSrcPath,
+        views: backendSrcPath + 'views/',
+        dest: rootPaths.deploy + 'src/'
+        
     },
     app: {
         src: basePaths.frontend + 'src/',
@@ -33,7 +38,7 @@ var paths = {
         dest: publicFilesPath + 'stylesheets/'
     }
 };
-var server = paths.backend.src + 'bin/www.js';
+var server = paths.backend.dest + 'bin/www.js';
 
 gulp.task('tsd', function (callback) {
     tsd({
@@ -50,9 +55,13 @@ gulp.task('tsd', function (callback) {
 
 var tsBackendProject = typescript.createProject(paths.backend.src + 'tsconfig.json');
 gulp.task('compileBackend', function () {
-    return gulp.src(paths.backend.src+'**/*.ts')
+    gulp.src(paths.backend.src+'**/*.ts', {base: basePaths.backend})
         .pipe(typescript(tsBackendProject)) 
-        .pipe(gulp.dest(''));
+        .pipe(gulp.dest(rootPaths.deploy));
+    gulp.src(paths.backend.views + '*.hbs')
+        .pipe(gulp.dest(paths.backend.dest +'views/'));
+    console.log(paths.backend.views + '*.hbs');
+    console.log(paths.backend.dest +'views/');
 });
 
 // var tsFrontendProject = typescript.createProject({
@@ -93,14 +102,22 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], function (cb) {
 
     return nodemon({
         script: server,
-        watch: [paths.backend.src + '**/*.ts'],
-        env: { 'NODE_ENV': 'development' }
+        watch: [paths.backend.src],
+        ext: 'ts',
+        env: { 'NODE_ENV': 'development' },
+        tasks: function (changedFiles) {
+            var tasks = [];
+            tasks.push('compileBackend');
+            return tasks;
+        }
     }).on('start', function () {
+        console.log("nodemonStart");
         if (!started) {
             cb();
             started = true;
         }
     }).on('restart', function onRestart() {
+        console.log("nodemonRestart");
         setTimeout(function reload() {
             browserSync.reload({
                 stream: false
@@ -110,7 +127,7 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], function (cb) {
 });
 
 gulp.task('watch', ['compileBackend', 'deployFrontendApp'], function () {
-    gulp.watch(paths.backend.src + '**/*.ts', ['compileBackend']); 
+    // gulp.watch(paths.backend.src + '**/*.ts', ['compileBackend']); 
     gulp.watch(paths.app.src + '**/*.js', ['deployFrontendApp']);
 }); 
 

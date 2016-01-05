@@ -41,3 +41,4 @@ typings/
 app/backend/src/bin/*.js
 app/backend/src/app.js
 app/backend/src/routes/*.js
+deploy/
