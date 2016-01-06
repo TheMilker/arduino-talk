@@ -1,9 +1,11 @@
 var gulp = require('gulp');
-var jshint = require('gulp-jshint');
 var nodemon = require('gulp-nodemon');
 var tsd = require('gulp-tsd');
 var typescript = require('gulp-typescript');
 var browserSync = require('browser-sync').create();
+var rimraf = require('rimraf');
+var less = require('gulp-less');
+var tslint = require('gulp-tslint');
 
 var rootPaths =  {
     app: './app/',
@@ -34,8 +36,12 @@ var paths = {
         dest: publicFilesPath + 'lib/'
     },
     styles: {
-        src: basePaths.backend + 'less/',
+        src: basePaths.frontend + 'less/',
         dest: publicFilesPath + 'stylesheets/'
+    },
+    images: {
+        src: basePaths.frontend + 'images/',
+        dest: publicFilesPath + 'images/'
     }
 };
 var server = paths.backend.dest + 'bin/www.js';
@@ -47,21 +53,19 @@ gulp.task('tsd', function (callback) {
     }, callback);
 });
 
-// gulp.task('lint', function() {
-//   return gulp.src([paths.backend.src + '**/*.js', paths.app.src + '**/*.js'])
-//     .pipe(jshint())
-//     .pipe(jshint.reporter('default'));
-// });
+gulp.task('tslint', function() {
+    gulp.src(paths.backend.src+'**/*.ts')
+        .pipe(tslint())
+        .pipe(tslint.report('verbose'));
+});
 
 var tsBackendProject = typescript.createProject(paths.backend.src + 'tsconfig.json');
-gulp.task('compileBackend', function () {
+gulp.task('compileBackend', ['tslint'], function() {
     gulp.src(paths.backend.src+'**/*.ts', {base: basePaths.backend})
         .pipe(typescript(tsBackendProject)) 
         .pipe(gulp.dest(rootPaths.deploy));
     gulp.src(paths.backend.views + '*.hbs')
         .pipe(gulp.dest(paths.backend.dest +'views/'));
-    console.log(paths.backend.views + '*.hbs');
-    console.log(paths.backend.dest +'views/');
 });
 
 // var tsFrontendProject = typescript.createProject({
@@ -73,7 +77,7 @@ gulp.task('compileBackend', function () {
 // });
 
 gulp.task('deployFrontendApp', function() {
-    return gulp.src(paths.app.src + '**')
+    return gulp.src(paths.app.src + '**/*.js')
         .pipe(gulp.dest(paths.app.dest));
 });
 
@@ -89,9 +93,9 @@ gulp.task('deployFrontendLibraries', function() {
 // run browser-sync on for client changes
 gulp.task('browser-sync', ['deployFrontend', 'nodemon', 'watch'], function () {
     browserSync.init(null, {
-        proxy: "http://localhost:3000",
-        files: [publicFilesPath + "**/*.*"],
-        browser: "google chrome",
+        proxy: 'http://localhost:3000',
+        files: [publicFilesPath + '**/*.*'],
+        browser: 'google chrome',
         port: 7000,
     });
 });
@@ -107,17 +111,16 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], function (cb) {
         env: { 'NODE_ENV': 'development' },
         tasks: function (changedFiles) {
             var tasks = [];
+            tasks.push('tslint');
             tasks.push('compileBackend');
             return tasks;
         }
     }).on('start', function () {
-        console.log("nodemonStart");
         if (!started) {
             cb();
             started = true;
         }
     }).on('restart', function onRestart() {
-        console.log("nodemonRestart");
         setTimeout(function reload() {
             browserSync.reload({
                 stream: false
@@ -129,7 +132,20 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], function (cb) {
 gulp.task('watch', ['compileBackend', 'deployFrontendApp'], function () {
     // gulp.watch(paths.backend.src + '**/*.ts', ['compileBackend']); 
     gulp.watch(paths.app.src + '**/*.js', ['deployFrontendApp']);
+    gulp.watch(paths.styles.src + '**/*.less', ['less']);
 }); 
 
+gulp.task('clean', function (cb) {
+  rimraf(rootPaths.deploy, cb);
+});
+
+gulp.task('less', function () {
+  return gulp.src(paths.styles.src+ '**/*.less')
+    .pipe(less().on('error', function(err) {
+        console.log(err);
+    }))
+    .pipe(gulp.dest(paths.styles.dest));
+});
+
 gulp.task('deployFrontend', ['deployFrontendApp', 'deployFrontendLibraries']);
-gulp.task('default', ['deployFrontend', 'browser-sync']);
+gulp.task('default', ['compileBackend', 'deployFrontend', 'browser-sync']);

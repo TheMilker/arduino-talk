@@ -1,6 +1,6 @@
 {
   "name": "arduino-talk",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node ./app/backend/src/bin/www.js"
@@ -11,27 +11,29 @@
     "cookie-parser": "~1.4.0",
     "debug": "~2.2.0",
     "es6-promise": "^3.0.2",
-    "es6-shim": "^0.34.0",
+    "es6-shim": "^0.33.3",
     "express": "~4.13.1",
     "hbs": "~4.0.0",
     "less-middleware": "2.0.x",
     "morgan": "~1.6.1",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.0",
-    "serialport": "^2.0.5",
+    "serialport": "^2.0.6",
     "serve-favicon": "~2.3.0",
-    "systemjs": "0.19.9",
+    "systemjs": "0.19.11",
     "zone.js": "0.5.10"
   },
   "devDependencies": {
-    "browser-sync": "^2.10.1",
+    "browser-sync": "^2.11.0",
     "gulp": "^3.9.0",
-    "gulp-jshint": "^2.0.0",
+    "gulp-less": "^3.0.5",
     "gulp-nodemon": "^2.0.6",
     "gulp-tsd": "0.0.4",
+    "gulp-tslint": "^4.2.2",
     "gulp-typescript": "^2.10.0",
-    "jshint": "^2.9.1-rc2",
+    "rimraf": "^2.5.0",
     "tsd": "^0.6.5",
+    "tslint": "^3.2.1",
     "typescript": "^1.7.5"
   }
 }
