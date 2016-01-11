@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./app/backend/src/bin/www.js"
+    "start": "node ./deploy/src/bin/www.js"
   },
   "dependencies": {
     "angular2": "2.0.0-beta.0",
