@@ -2,7 +2,7 @@
   app.AppComponent = ng.core
     .Component({
       selector: 'arduino-talk',
-      template: '<h1>My First Angular 2 App</h1>'
+      template: '<h1>Angular 2 beta in the house!</h1>'
     })
     .Class({
       constructor: function() {}

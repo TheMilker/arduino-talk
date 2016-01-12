@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser';
 
 import index from './routes/index';
 
-var app = express();
+let app = express();
 
 // view engine setup
 app.set('views', join(__dirname, './views'));
@@ -26,7 +26,7 @@ app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  var err = new Error('Not Found');
+  let err = new Error('Not Found');
   err['status'] = 404;
   next(err);
 });

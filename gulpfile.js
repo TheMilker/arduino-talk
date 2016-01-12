@@ -106,15 +106,9 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], function (cb) {
 
     return nodemon({
         script: server,
-        watch: [paths.backend.src],
-        ext: 'ts',
-        env: { 'NODE_ENV': 'development' },
-        tasks: function (changedFiles) {
-            var tasks = [];
-            tasks.push('tslint');
-            tasks.push('compileBackend');
-            return tasks;
-        }
+        watch: [paths.backend.dest + '/bin/'],
+        ext: 'js',
+        env: { 'NODE_ENV': 'development' }
     }).on('start', function () {
         if (!started) {
             cb();
@@ -129,8 +123,8 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], function (cb) {
     });
 });
 
-gulp.task('watch', ['compileBackend', 'deployFrontendApp'], function () {
-    // gulp.watch(paths.backend.src + '**/*.ts', ['compileBackend']); 
+gulp.task('watch', ['compileBackend', 'deployFrontendApp', 'less'], function () {
+    gulp.watch([paths.backend.src + '**/*.ts', paths.backend.views + '*.hbs'], ['compileBackend']); 
     gulp.watch(paths.app.src + '**/*.js', ['deployFrontendApp']);
     gulp.watch(paths.styles.src + '**/*.less', ['less']);
 }); 
@@ -148,4 +142,4 @@ gulp.task('less', function () {
 });
 
 gulp.task('deployFrontend', ['deployFrontendApp', 'deployFrontendLibraries']);
-gulp.task('default', ['compileBackend', 'deployFrontend', 'browser-sync']);
+gulp.task('default', ['compileBackend', 'deployFrontend', 'less', 'browser-sync']);
