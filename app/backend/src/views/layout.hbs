@@ -6,15 +6,27 @@
     
     <!-- 1. Load libraries -->
     <script src="lib/angular2-polyfills.js"></script>
-    <script src="lib/Rx.umd.js"></script>
-    <script src="lib/angular2-all.umd.js"></script>
-    
-    <!-- 2. Load our 'modules' -->
+    <script src="lib/system.js"></script>
+    <!-- 2. Configure SystemJS -->
+    <script>
+      System.config({
+        packages: { app: { defaultExtension: 'js' } }
+      });
+    </script>
+    <!-- 3. Load more libraries -->
+    <script src="lib/Rx.js"></script>
+    <script src="lib/angular2.dev.js"></script>    
+    <!-- 4. Load our 'modules' -->
     <script src='app/arduino-talk.component.js'></script>
     <script src='app/boot.js'></script>
     
+    <script>
+      System.import('app/boot')
+            .catch(console.error.bind(console));
+    </script>
   </head>
+  <!-- 5. Display the application -->
   <body>
-    {{{body}}}
+    <my-app>Loading...</my-app>
   </body>
 </html>

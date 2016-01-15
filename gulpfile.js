@@ -54,14 +54,20 @@ gulp.task('tsd', (cb) => {
     }, cb);
 });
 
-gulp.task('tslint', () => {
+gulp.task('tslint:backend', () => {
     gulp.src(paths.backend.src+'**/*.ts')
         .pipe(tslint())
         .pipe(tslint.report('verbose'));
 });
 
+gulp.task('tslint:frontend', () => {
+    gulp.src(paths.app.src+'**/*.ts')
+        .pipe(tslint())
+        .pipe(tslint.report('verbose'));
+});
+
 var tsBackendProject = typescript.createProject(paths.backend.src + 'tsconfig.json');
-gulp.task('compileBackend', ['tslint'], () => {
+gulp.task('compile:backend', ['tslint:backend'], () => {
     gulp.src(paths.backend.src+'**/*.ts', {base: basePaths.backend})
         .pipe(typescript(tsBackendProject)) 
         .pipe(gulp.dest(rootPaths.deploy));
@@ -69,30 +75,26 @@ gulp.task('compileBackend', ['tslint'], () => {
         .pipe(gulp.dest(paths.backend.dest +'views/'));
 });
 
-// var tsFrontendProject = typescript.createProject({
-// 	declaration: true,
-// 	noExternalResolve: true
-// });
-// gulp.task('compileFrontend', function() {
-    
-// });
-
-gulp.task('deployFrontendApp', () => {
-    return gulp.src(paths.app.src + '**/*.js')
+var tsFrontendProject = typescript.createProject(paths.app.src + 'tsconfig.json');
+gulp.task('compile:frontend', ['tslint:frontend'], () => {
+    gulp.src(paths.app.src+'**/*.ts', {base: paths.app.src})
+        .pipe(typescript(tsFrontendProject)) 
         .pipe(gulp.dest(paths.app.dest));
 });
 
-gulp.task('deployFrontendLibraries', () => {
+gulp.task('deploy:frontendLibraries', () => {
     return gulp.src([
         rootPaths.node + 'angular2/bundles/angular2-polyfills.js',
-        rootPaths.node + 'rxjs/bundles/Rx.umd.js',
-        rootPaths.node + 'angular2/bundles/angular2-all.umd.js'
+        rootPaths.node + 'rxjs/bundles/Rx.js',
+        rootPaths.node + 'angular2/bundles/angular2.dev.js',
+        rootPaths.node + 'systemjs/dist/system.js',
+        rootPaths.node + 'systemjs/dist/system.js.map'
     ])
     .pipe(gulp.dest(paths.lib.dest));
 });
 
 // run browser-sync on for client changes
-gulp.task('browser-sync', ['deployFrontend', 'nodemon', 'watch'], () => {
+gulp.task('browser-sync', ['deploy:frontend', 'nodemon', 'watch'], () => {
     browserSync.init(null, {
         proxy: 'http://localhost:3000',
         files: [publicFilesPath + '**/*.*'],
@@ -102,7 +104,7 @@ gulp.task('browser-sync', ['deployFrontend', 'nodemon', 'watch'], () => {
 });
 
 // run nodemon on server file changes
-gulp.task('nodemon', ['compileBackend', 'deployFrontend'], (cb) => {
+gulp.task('nodemon', ['compile:backend', 'deploy:frontend'], (cb) => {
     var started = false;
 
     return nodemon({
@@ -124,13 +126,13 @@ gulp.task('nodemon', ['compileBackend', 'deployFrontend'], (cb) => {
     });
 });
 
-gulp.task('watch', ['compileBackend', 'deployFrontendApp', 'less'], () => {
-    gulp.watch([paths.backend.src + '**/*.ts', paths.backend.views + '*.hbs'], ['compileBackend']); 
-    gulp.watch(paths.app.src + '**/*.js', ['deployFrontendApp']);
-    gulp.watch(paths.styles.src + '**/*.less', ['less']);
+gulp.task('watch', ['compile:backend', 'compile:frontend', 'compile:less'], () => {
+    gulp.watch([paths.backend.src + '**/*.ts', paths.backend.views + '*.hbs'], ['compile:backend']); 
+    gulp.watch(paths.app.src + '**/*.ts', ['compile:frontend']);
+    gulp.watch(paths.styles.src + '**/*.less', ['compile:less']);
 }); 
 
-gulp.task('less', () => {
+gulp.task('compile:less', () => {
   return gulp.src(paths.styles.src+ '**/*.less')
     .pipe(less().on('error', (err) => {
         console.log(err);
@@ -138,7 +140,7 @@ gulp.task('less', () => {
     .pipe(gulp.dest(paths.styles.dest));
 });
 
-gulp.task('server', ['compileBackend', 'deployFrontend', 'less'], (cb) => {   
+gulp.task('server', ['compile:backend', 'deploy:frontend', 'compile:less'], (cb) => {   
     var child = spawn('node', [server]);
     child.stdout.on('data', (chunk) => {
         console.log(`${chunk}`);
@@ -149,7 +151,7 @@ gulp.task('server', ['compileBackend', 'deployFrontend', 'less'], (cb) => {
 })
 
 gulp.task('clean', (cb) => rimraf(rootPaths.deploy, cb));
-gulp.task('deployFrontend', ['deployFrontendApp', 'deployFrontendLibraries']);
-gulp.task('build', ['tsd', 'compileBackend', 'deployFrontend', 'less']);
-gulp.task('dev', ['compileBackend', 'deployFrontend', 'less', 'browser-sync']);
-gulp.task('default', ['compileBackend', 'deployFrontend', 'less', 'server']);
+gulp.task('deploy:frontend', ['compile:frontend', 'deploy:frontendLibraries']);
+gulp.task('build', ['tsd', 'compile:backend', 'deploy:frontend', 'compile:less']);
+gulp.task('dev', ['compile:backend', 'deploy:frontend', 'compile:less', 'browser-sync']);
+gulp.task('default', ['compile:backend', 'deploy:frontend', 'compile:less', 'server']);
