@@ -3,7 +3,7 @@ var nodemon = require('gulp-nodemon');
 var tsd = require('gulp-tsd');
 var typescript = require('gulp-typescript');
 var browserSync = require('browser-sync').create();
-var rimraf = require('rimraf');
+var rimraf = require('gulp-rimraf');
 var less = require('gulp-less');
 var tslint = require('gulp-tslint');
 var spawn = require('child_process').spawn;
@@ -12,7 +12,8 @@ var rootPaths =  {
     app: './app/',
     bower: './bower_components/',
     node: './node_modules/',
-    deploy: './deploy/'
+    deploy: './deploy/',
+    typings: './typings/'
 };
 var basePaths = {
     frontend: rootPaths.app + 'frontend/',
@@ -67,7 +68,7 @@ gulp.task('tslint:frontend', () => {
 });
 
 var tsBackendProject = typescript.createProject(paths.backend.src + 'tsconfig.json');
-gulp.task('compile:backend', ['tslint:backend'], () => {
+gulp.task('compile:backend', ['tsd', 'tslint:backend'], () => {
     gulp.src(paths.backend.src+'**/*.ts', {base: basePaths.backend})
         .pipe(typescript(tsBackendProject)) 
         .pipe(gulp.dest(rootPaths.deploy));
@@ -150,7 +151,11 @@ gulp.task('server', ['compile:backend', 'deploy:frontend', 'compile:less'], (cb)
     });    
 })
 
-gulp.task('clean', (cb) => rimraf(rootPaths.deploy, cb));
+gulp.task('clean:build', (cb) => {
+    return gulp.src([rootPaths.deploy, rootPaths.typings], { read: false })
+        .pipe(rimraf({ force: true }));
+});
+
 gulp.task('deploy:frontend', ['compile:frontend', 'deploy:frontendLibraries']);
 gulp.task('build', ['tsd', 'compile:backend', 'deploy:frontend', 'compile:less']);
 gulp.task('dev', ['compile:backend', 'deploy:frontend', 'compile:less', 'browser-sync']);
