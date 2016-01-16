@@ -1,6 +1,7 @@
 import app from '../app';
-import debugModule = require('debug');
-import http = require('http');
+import * as debugModule from 'debug';
+import * as http from 'http';
+import * as sio from 'socket.io';
 
 const debug = debugModule('node-express-typescript:server');
 
@@ -10,6 +11,8 @@ app.set('port', port);
 
 // create server and listen on provided port (on all network interfaces).
 const server = http.createServer(app);
+const io = sio(server);
+io.on('connection', function(){ /* … */ });
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
