@@ -89,7 +89,9 @@ gulp.task('deploy:frontendLibraries', () => {
         rootPaths.node + 'rxjs/bundles/Rx.js',
         rootPaths.node + 'angular2/bundles/angular2.dev.js',
         rootPaths.node + 'systemjs/dist/system.js',
-        rootPaths.node + 'systemjs/dist/system.js.map'
+        rootPaths.node + 'systemjs/dist/system.js.map',
+        rootPaths.node + 'socket.io-client/socket.io.js',
+        rootPaths.node + 'jsmpeg/jsmpg.js',
     ])
     .pipe(gulp.dest(paths.lib.dest));
 });
