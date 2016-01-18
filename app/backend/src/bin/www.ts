@@ -138,17 +138,24 @@ http.createServer(function(req, res) {
 }).listen(8082, function() {
     console.log('Listening for video stream on port ' + 8082);
 
-    let codec;        
+    let codec;
+    let device;
     switch (os.platform()) {
-    case 'win32':
-        codec = 'vfwcap';
-        break;
-    case 'linux':
-        codec = 'video4linux2';
-        break;
-    case 'darwin':
-        codec = 'qtkit';
-        break;
-}
-    childProcess.exec('ffmpeg -s 320x240 -f '+ codec +' -i /dev/video0 -f mpeg1video -b 800k -r 30 http://127.0.0.1:8082', execCallback);
+        case 'win32':
+            // codec = 'dshow';
+            // device = 'video="Logitech HD Webcam C270"';
+            codec = 'vfwcap';
+            device = 'default';
+            break;
+        case 'linux':
+            codec = 'video4linux2';
+            device = '/dev/video0';
+            break;
+        case 'darwin':
+            codec = 'avfoundation';
+            device = 'default';
+            break;
+    }
+    childProcess.exec('ffmpeg -video_size 320x240 -framerate 30 -f ' + codec + ' -i ' + device + ' -f mpeg1video http://127.0.0.1:8082', execCallback);
+    //childProcess.exec('ffmpeg -video_size 1280x720 -rtbufsize 702000k -framerate 30 -f dshow -i video="Logitech HD Webcam C270" -vcodec libx264 -crf 0 -preset ultrafast -f mpegts http://127.0.0.1:8082', execCallback);
 });

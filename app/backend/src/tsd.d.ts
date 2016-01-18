@@ -4,4 +4,4 @@
 /// <reference path="../../../typings/cookie-parser/cookie-parser.d.ts" />
 /// <reference path="../../../typings/serve-favicon/serve-favicon.d.ts" />
 /// <reference path="../../../typings/debug/debug.d.ts" />
-/// <reference path="../../../typings/socket.io/socket.io.d.ts" />
+/// <reference path="../../../typings/websocket/websocket.d.ts" />
