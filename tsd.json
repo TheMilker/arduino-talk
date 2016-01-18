@@ -6,7 +6,7 @@
     "bundle": "typings/tsd.d.ts",
     "installed": {
         "node/node.d.ts": {
-            "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
+            "commit": "70bf7e2bfeb0d5b1b651ef3219bcc65c8eec117e"
         },
         "serve-static/serve-static.d.ts": {
             "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
@@ -44,7 +44,7 @@
         "debug/debug.d.ts": {
             "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
         },
-        "socket.io/socket.io.d.ts": {
+        "websocket/websocket.d.ts": {
             "commit": "70bf7e2bfeb0d5b1b651ef3219bcc65c8eec117e"
         }
     }
