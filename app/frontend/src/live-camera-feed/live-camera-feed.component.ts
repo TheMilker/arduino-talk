@@ -1,1 +1,0 @@
-import {Directive, Input} from 'angular2/core';

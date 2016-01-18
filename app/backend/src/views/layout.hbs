@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{title}}</title>
-    
-    
+    <title>{{title}}</title>    
     <link rel='stylesheet' href='/stylesheets/style.css' />    
     <!-- 1. Load libraries -->
     <script src="lib/socket.io.js"></script>
@@ -20,6 +18,7 @@
     <script src="lib/Rx.js"></script>
     <script src="lib/angular2.dev.js"></script>    
     <!-- 4. Load our 'modules' -->
+    <script src='app/camera-feed/camera-feed.directive.js'></script>
     <script src='app/arduino-talk.component.js'></script>
     <script src='app/boot.js'></script>
     
@@ -27,38 +26,9 @@
       System.import('app/boot')
             .catch(console.error.bind(console));
     </script>
-    
-    
   </head>
   <!-- 5. Display the application -->
   <body>
-    <my-app>Loading...</my-app>
-    <!-- Reference: https://github.com/phoboslab/jsmpeg/blob/master/stream-example.html -->
-
-  <div class="container">
-    <!--
-      The canvas size specified here is the "initial" internal resolution. jsmpeg will
-      change this internal resolution to whatever the source provides. The size the
-      canvas is displayed on the website is dictated by the CSS style.
-    -->
-    <canvas id="canvas-video" width="640" height="480"></canvas>
-  </div>
-
-  <script>
-        // var socket = io.connect('http://localhost:7000');
-        // socket.on('camera data', function (data) {
-        //     console.log(data);
-        // });
-        var wsUrl = 'ws://localhost:8084/';
-
-        var canvas = document.getElementById('canvas-video');
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#333';
-        ctx.fillText('Loading...', canvas.width/2-30, canvas.height/3);
-        // Start the player
-        var client = new WebSocket(wsUrl);
-        var player = new jsmpeg(client, { canvas:canvas });
-        
-    </script>
+    <arduino-talk>Loading...</arduino-talk>
   </body>
 </html>
