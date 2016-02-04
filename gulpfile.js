@@ -90,7 +90,7 @@ gulp.task('deploy:frontendLibraries', () => {
         rootPaths.node + 'angular2/bundles/angular2.dev.js',
         rootPaths.node + 'systemjs/dist/system.js',
         rootPaths.node + 'systemjs/dist/system.js.map',
-        rootPaths.node + 'jsmpeg/jsmpg.js',
+        rootPaths.node + 'jsmpeg/jsmpg.js'
     ])
     .pipe(gulp.dest(paths.lib.dest));
 });

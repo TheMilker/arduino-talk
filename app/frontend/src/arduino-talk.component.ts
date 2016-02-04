@@ -9,7 +9,8 @@ import {CameraFeedDirective} from './camera-feed/camera-feed.directive';
     template: `
         <h1>Angular 2 beta.1</h1>
         <div class="container">
-            <canvas id="canvas-video" width="640" height="480" camera-feed></canvas>
+            <!-- <canvas id="canvas-video" width="640" height="480" camera-feed></canvas> -->
+            <video camera-feed></video>
         </div>
     `    
 })
