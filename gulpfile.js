@@ -1,12 +1,12 @@
 var gulp = require('gulp');
 var nodemon = require('gulp-nodemon');
-var tsd = require('gulp-tsd');
 var typescript = require('gulp-typescript');
 var browserSync = require('browser-sync').create();
 var rimraf = require('gulp-rimraf');
 var less = require('gulp-less');
 var tslint = require('gulp-tslint');
 var spawn = require('child_process').spawn;
+var gulpTypings = require("gulp-typings");
 
 var rootPaths =  {
     app: './app/',
@@ -27,7 +27,7 @@ var paths = {
         src: backendSrcPath,
         views: backendSrcPath + 'views/',
         dest: rootPaths.deploy + 'src/'
-        
+
     },
     app: {
         src: basePaths.frontend + 'src/',
@@ -48,29 +48,27 @@ var paths = {
 };
 var server = paths.backend.dest + 'bin/www.js';
 
-gulp.task('tsd', (cb) => {
-    tsd({
-        command: 'reinstall',
-        config: './tsd.json'
-    }, cb);
+gulp.task("installTypings",function(){
+    var stream = gulp.src("./typings.json").pipe(gulpTypings());
+    return stream;
 });
 
 gulp.task('tslint:backend', () => {
-    gulp.src(paths.backend.src+'**/*.ts')
+    gulp.src([paths.backend.src+'**/*.ts', '!'+paths.backend.src+'tsd.d.ts'])
         .pipe(tslint())
         .pipe(tslint.report('verbose'));
 });
 
 gulp.task('tslint:frontend', () => {
-    gulp.src(paths.app.src+'**/*.ts')
+    gulp.src([paths.app.src+'**/*.ts', '!'+paths.app.src+'tsd.d.ts'])
         .pipe(tslint())
         .pipe(tslint.report('verbose'));
 });
 
 var tsBackendProject = typescript.createProject(paths.backend.src + 'tsconfig.json');
-gulp.task('compile:backend', ['tsd', 'tslint:backend'], () => {
+gulp.task('compile:backend', ['installTypings', 'tslint:backend'], () => {
     gulp.src(paths.backend.src+'**/*.ts', {base: basePaths.backend})
-        .pipe(typescript(tsBackendProject)) 
+        .pipe(typescript(tsBackendProject))
         .pipe(gulp.dest(rootPaths.deploy));
     gulp.src(paths.backend.views + '*.hbs')
         .pipe(gulp.dest(paths.backend.dest +'views/'));
@@ -79,7 +77,7 @@ gulp.task('compile:backend', ['tsd', 'tslint:backend'], () => {
 var tsFrontendProject = typescript.createProject(paths.app.src + 'tsconfig.json');
 gulp.task('compile:frontend', ['tslint:frontend'], () => {
     gulp.src(paths.app.src+'**/*.ts', {base: paths.app.src})
-        .pipe(typescript(tsFrontendProject)) 
+        .pipe(typescript(tsFrontendProject))
         .pipe(gulp.dest(paths.app.dest));
 });
 
@@ -129,10 +127,10 @@ gulp.task('nodemon', ['compile:backend', 'deploy:frontend'], (cb) => {
 });
 
 gulp.task('watch', ['compile:backend', 'compile:frontend', 'compile:less'], () => {
-    gulp.watch([paths.backend.src + '**/*.ts', paths.backend.views + '*.hbs'], ['compile:backend']); 
+    gulp.watch([paths.backend.src + '**/*.ts', paths.backend.views + '*.hbs'], ['compile:backend']);
     gulp.watch(paths.app.src + '**/*.ts', ['compile:frontend']);
     gulp.watch(paths.styles.src + '**/*.less', ['compile:less']);
-}); 
+});
 
 gulp.task('compile:less', () => {
   return gulp.src(paths.styles.src+ '**/*.less')
@@ -142,14 +140,14 @@ gulp.task('compile:less', () => {
     .pipe(gulp.dest(paths.styles.dest));
 });
 
-gulp.task('server', ['compile:backend', 'deploy:frontend', 'compile:less'], (cb) => {   
+gulp.task('server', ['compile:backend', 'deploy:frontend', 'compile:less'], (cb) => {
     var child = spawn('node', [server]);
     child.stdout.on('data', (chunk) => {
         console.log(`${chunk}`);
     });
     child.stderr.on('data', (chunk) => {
         console.log(`${chunk}`);
-    });    
+    });
 })
 
 gulp.task('clean:build', (cb) => {
@@ -158,6 +156,6 @@ gulp.task('clean:build', (cb) => {
 });
 
 gulp.task('deploy:frontend', ['compile:frontend', 'deploy:frontendLibraries']);
-gulp.task('build', ['tsd', 'compile:backend', 'deploy:frontend', 'compile:less']);
+gulp.task('build', ['installTypings', 'compile:backend', 'deploy:frontend', 'compile:less']);
 gulp.task('dev', ['compile:backend', 'deploy:frontend', 'compile:less', 'browser-sync']);
 gulp.task('default', ['compile:backend', 'deploy:frontend', 'compile:less', 'server']);
