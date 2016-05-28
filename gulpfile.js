@@ -86,9 +86,15 @@ gulp.task('deploy:frontendLibraries', () => {
         rootPaths.node + 'angular2/bundles/angular2-polyfills.js',
         rootPaths.node + 'rxjs/bundles/Rx.js',
         rootPaths.node + 'angular2/bundles/angular2.dev.js',
+        rootPaths.node + 'angular2/bundles/angular2.js',
         rootPaths.node + 'systemjs/dist/system.js',
+        rootPaths.node + 'systemjs/dist/system.src.js',
         rootPaths.node + 'systemjs/dist/system.js.map',
-        rootPaths.node + 'jsmpeg/jsmpg.js'
+        rootPaths.node + 'es6-shim/es6-shim.min.js',
+        rootPaths.node + 'es6-shim/es6-shim.map',
+        rootPaths.node + 'zone.js/dist/zone.js',
+        rootPaths.node + 'reflect-metadata/Reflect.js',
+        rootPaths.node + 'rxjs/bundles/Rx.umd.js'
     ])
     .pipe(gulp.dest(paths.lib.dest));
 });

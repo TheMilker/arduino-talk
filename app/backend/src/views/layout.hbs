@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{title}}</title>    
-    <link rel='stylesheet' href='/stylesheets/style.css' />    
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
     <!-- 1. Load libraries -->
     <script src="/socket.io/socket.io.js"></script>
-    <script src="lib/jsmpg.js"></script>
-    <script src="lib/angular2-polyfills.js"></script>
-    <script src="lib/system.js"></script>
-    <!-- 2. Configure SystemJS -->
+    <script src="lib/es6-shim.min.js"></script>
+    <script src="lib/zone.js"></script>
+    <script src="lib/Reflect.js"></script>
+    <script src="lib/system.src.js"></script>
+
+     <!-- 2. Configure SystemJS -->
     <script>
-      System.config({
-        packages: { app: { defaultExtension: 'js' } }
-      });
+        System.config({
+          packages: {
+            scripts: {    // <--- right there
+              format: 'cjs',
+              defaultExtension: 'js'
+            }
+          }
+        });
+
     </script>
-    <!-- 3. Load more libraries -->
-    <script src="lib/Rx.js"></script>
-    <script src="lib/angular2.dev.js"></script>    
-    <!-- 4. Load our 'modules' -->
-    <script src='app/camera-feed/camera-feed.directive.js'></script>
-    <script src='app/arduino-talk.component.js'></script>
-    <script src='app/boot.js'></script>
-    
+
     <script>
       System.import('app/boot')
             .catch(console.error.bind(console));

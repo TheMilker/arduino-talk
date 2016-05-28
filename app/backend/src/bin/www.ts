@@ -100,7 +100,8 @@ http.createServer((req: any, res: any): void => {
     // });
     sio.on('connection', (socket: any) => {
         req.on('data', (data: any) => {
-            socket.emit('stream', data);
+            console.log('sending data', data);
+            socket.emit('stream', {streamData: data});
         });
     });
 }).listen(8082, (): void => {
@@ -126,6 +127,8 @@ http.createServer((req: any, res: any): void => {
         default:
             throw new Error('platform ' + os.platform() + ' not supported.');
     }
-    childProcess.exec('ffmpeg -video_size 320x240 -framerate 30 -rtbufsize 702000k -f ' + codec + ' -i ' + device + ' -vcodec libx264 -crf 0 -preset ultrafast -f mpegts http://127.0.0.1:8082', execCallback);
+    // childProcess.exec('ffmpeg -video_size 320x240 -framerate 30 -rtbufsize 702000k -f ' + codec + ' -i ' + device + ' -vcodec libx264 -crf 0 -preset ultrafast -f mpegts http://127.0.0.1:8082', execCallback);
     // childProcess.exec('ffmpeg -video_size 1280x720 -rtbufsize 702000k -framerate 30 -f dshow -i video="Logitech HD Webcam C270" -vcodec libx264 -crf 0 -preset ultrafast -f mpegts http://127.0.0.1:8082', execCallback);
+    childProcess.exec('ffmpeg -s 320x240 -f vfwcap -i video="Logitech HD Webcam C270" -f mpeg1video -b 800k -r 30 http://127.0.0.1:8082', execCallback);
+
 });

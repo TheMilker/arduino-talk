@@ -9,22 +9,28 @@ export class CameraFeedDirective {
     constructor(private el: ElementRef, private zone: NgZone) {
         zone.run(() => {
             // reference: https://github.com/phoboslab/jsmpeg/blob/master/stream-example.html
-            // var wsUrl = 'ws://localhost:8084/';
-            // var canvas = <HTMLCanvasElement>el.nativeElement;
-            // var ctx = canvas.getContext('2d');
+            // let wsUrl = 'ws://localhost:8084/';
+            // let canvas = <HTMLCanvasElement>el.nativeElement;
+            // let ctx = canvas.getContext('2d');
             // ctx.fillStyle = '#333';
-            // ctx.fillText('Loading...', canvas.width/2-30, canvas.height/3);
+            // ctx.fillText('Loading...', canvas.width / 2 - 30, canvas.height / 3);
             // // Start the player
-            // var client = new WebSocket(wsUrl);
-            // var player = new jsmpeg(client, { canvas:canvas });
-            // let video: HTMLVideoElement = el.nativeElement as HTMLVideoElement;
-
+            // let client = new WebSocket(wsUrl);
+            // let player = new jsmpeg(client, { canvas: canvas });
+            let img: HTMLImageElement = el.nativeElement as HTMLImageElement;
 
             let socket: any = io.connect('http://localhost:7000');
             socket.on('stream', (data: any) => {
-                console.log(data);
-                // video.src = window.URL.create ObjectURL(data);
+                let arrayBuffer: Uint8Array = new Uint8Array(data.streamData);
+                let blob: Blob = new Blob([arrayBuffer], {type: 'image/jpeg'});
+                let imageUrl: any = window.URL.createObjectURL(blob);
+                // add image data to hidden preloader image, to avoid flicker
+                // //after it is preloaded, it it sent to the visible img
+                // ui.imgPreloader.attr('src', imageUrl);
+                // ui.imgTimestamp.html(imageData.timestamp);
+                img.src = decodeURIComponent(imageUrl);
             });
+
         });
     }
 }
